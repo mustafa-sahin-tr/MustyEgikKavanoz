@@ -94,13 +94,13 @@ milestone: MVP
 
 **Eğik Kavanoz** epic'inin **1. story'si** (epic #EPIC). Tema: Altyapı.
 
-**Öncelik:** P1 · **Efor:** M · **Milestone:** MVP · **Dokunduğu yer:** Unity projesi, `MustyCozyCore` ve `MustyMergePhysics` UPM bağımlılıkları, sahne düzeni, UGS kurulumu
+**Öncelik:** P1 · **Efor:** M · **Milestone:** MVP · **Dokunduğu yer:** Unity projesi, `MustyCozyCore` (`com.mtafasahin.cozycore`) ve `MustyMergePhysics` (`com.mtafasahin.mergephysics`) UPM bağımlılıkları (ikisi de monorepo `mtafasahin-unity-packages`), sahne düzeni, UGS kurulumu
 
 ### Kullanıcı hikâyesi
 Bir geliştirici olarak Eğik Kavanoz projesinin ortak paketi (reklam, IAP, UGS, yerelleştirme, ayarlar) ve Daily Drop'un fizik çekirdeğini ilk günden kullanmasını isterim, böylece yalnızca yatırma, su ve akvaryum katmanlarını yazarım.
 
 ### Kabul kriterleri
-- [ ] **Senaryo: Temiz kurulum** · Verilen boş bir Unity 2022 LTS projesi · Eğer `MustyCozyCore` ve `MustyMergePhysics` paketleri git URL ile eklenirse · O zaman proje derlenir ve `Bootstrap` sahnesi açılınca UGS oturumu (anonim Player Accounts) kurulur.
+- [ ] **Senaryo: Temiz kurulum** · Verilen boş bir Unity 6000.6 projesi · Eğer `MustyCozyCore` ve `MustyMergePhysics` paketleri git URL ile eklenirse · O zaman proje derlenir ve `Bootstrap` sahnesi açılınca UGS oturumu (anonim Player Accounts) kurulur.
 - [ ] **Senaryo: MergePhysics örnek sahnesi** · Verilen paketin `Samples~/BasicJar` sahnesi · Eğer Play'e basılırsa · O zaman daire gövdeli 8 kademe birleşme, taşma tespiti ve zincir puanı oyun kodu olmadan çalışır (paketin kendi smoke testi).
 - [ ] **Senaryo: Sahne akışı** · Verilen `Bootstrap → Home → Play → Result → Aquarium` sahneleri · Eğer uygulama açılırsa · O zaman 2 sn içinde Home görünür; geri tuşu Home'da uygulamadan çıkar, diğer sahnelerde bir geri gider (Play'de önce "Çık?" onayı).
 - [ ] **Senaryo: Yerelleştirme** · Verilen TR ve EN tabloları · Eğer cihaz dili TR ise · O zaman tüm metinler TR, aksi halde EN; dil Ayarlar'dan değiştirilebilir; 8 balık adı iki dilde de tabloda.
@@ -109,12 +109,12 @@ Bir geliştirici olarak Eğik Kavanoz projesinin ortak paketi (reklam, IAP, UGS,
 
 ### Teknik görevler (Unity/C#)
 - [ ] Repo iskeleti: `Assets/_Game/{Scripts,Prefabs,Art,Audio,Data,Shaders}`, `.gitignore`, `docs/game-design.md` (bu epic'in kuralları), `docs/analytics.md`, `docs/tilt-physics.md` (7. story kararları).
-- [ ] `MustyMergePhysics` paketi (ayrı repo, UPM): Daily Drop'tan `Ball → MergeBody`, `BallDefinition → MergeDefinition` (collider tipi: Circle | Capsule), `MergeSystem`, `BallPool → MergePool`, `OverflowDetector` (dünya y tabanlı, referans çizgi dışarıdan verilir), `ChainScorer`, `DropController` (bırakma yüksekliği ve x aralığı delegeyle), `MergeEvent`. Daily Drop bu pakete geçirilir (ayrı issue o repoda).
+- [ ] `MustyMergePhysics` paketi (monorepo `mtafasahin-unity-packages`, `com.mtafasahin.mergephysics`; MergePhysics epic'i, v0.2.0 kinematik kap ve kapsül gövdeyi getirir): Daily Drop'tan `Ball → MergeBody`, `BallDefinition → MergeDefinition` (collider tipi: Circle | Capsule), `MergeSystem`, `BallPool → MergePool`, `OverflowDetector` (dünya y tabanlı, referans çizgi dışarıdan verilir), `ChainScorer`, `DropController` (bırakma yüksekliği ve x aralığı delegeyle), `MergeEvent`. Daily Drop bu pakete geçirilir (ayrı issue o repoda).
 - [ ] `MustyCozyCore` bağımlılığı (UPM git URL, sürüm etiketi): `AdsService`, `IapService`, `UgsBootstrap`, `Localization`, `SettingsScreen`, `BackButtonRouter`, `Haptics`, `ShareService`.
 - [ ] Sahne yöneticisi: `SceneFlow` (async yükleme, geçiş perdesi), `AppState` (ScriptableObject tabanlı oturum durumu), `RunState` (tur içi durum).
 - [ ] UGS: Player Accounts anonim giriş, Cloud Save, Analytics, Remote Config, Leaderboards projesi ve ortamları (`dev`, `prod`).
 - [ ] Remote Config şeması: `tilt_angle_deg`, `tilt_duration_ms`, `tilt_start_charges`, `tilt_max_charges`, `tilt_score_step`, `tilt_rewarded_per_run`, `rescue_enabled`, `overflow_grace_ms`, `drop_cooldown_ms`, `tier_weights`, `interstitial_daily_cap`, `interstitial_min_run_s`.
-- [ ] CI: GitHub Actions ile Android debug build (GameCI); artefakt olarak APK; paket testleri (`MustyMergePhysics` Edit Mode) CI'da koşar.
+- [ ] CI: GitHub Actions ile Android debug build (GameCI); artefakt olarak APK; paket testleri monorepo CI'ında koşar (MergePhysics 1).
 - [ ] Kod stili ve analiz: `.editorconfig`, Roslyn analizörleri, `Assembly Definition` dosyaları (Game, Game.Editor, Tests).
 
 ### Analitik
@@ -123,7 +123,7 @@ Bir geliştirici olarak Eğik Kavanoz projesinin ortak paketi (reklam, IAP, UGS,
 
 ### Notlar
 - Karar: fizik çekirdeği paket olarak ayrışır; Eğik Kavanoz'a özgü olan yalnızca `Jar` (döner kavanoz), `WaterSurface`, `TiltSystem`, `Aquarium`. Daily Drop 3 kapanmadan paket ayrıştırılamaz; o durumda bu story'nin eforu L olur ve ilk hafta burada geçer.
-- Karar: reklam mediation AppLovin MAX (Core ile aynı); bu oyunda iki ödüllü yerleşim (`tilt_extra`, `rescue`) ve bir interstitial yerleşimi (`run_end`).
+- Karar: reklam ağı AdMob (Core ile aynı; MAX adaptörü SONRA, CozyCore 33); bu oyunda iki ödüllü yerleşim (`tilt_extra`, `rescue`) ve bir interstitial yerleşimi (`run_end`).
 
 ## STORY: Eğik Kavanoz 2: Kavanoz, su yüzeyi ve taşma çizgisi
 labels: tema:cekirdek, P1, efor:M
@@ -479,7 +479,7 @@ Bir oyuncu olarak hakkım bitince bir reklam izleyip bir yatırma daha almak, ta
 ### Teknik görevler (Unity/C#)
 - [ ] `RewardedTiltFlow`: durum {Hidden, Offered, Loading, Showing, Rewarded, Failed}; `AdsService.ShowRewarded(placement: "tilt_extra")`; `TiltCharges.Grant("rewarded")`.
 - [ ] `RescueFlow`: `GameOverFlow` kancası (`RunState.Overflow`), panel UI + 6 sn sayaç, `AdsService.ShowRewarded(placement: "rescue")`, `RescueExecutor` (en yüksek 3 `MergeBody` seç, kabarcık efekti, havuza iade, `OverflowDetector.ResetTimers()`).
-- [ ] Core `AdsService`: AppLovin MAX ödüllü yerleşimler, yükleme/yeniden deneme, `OnRewarded` güvenilirlik (ödül yalnızca SDK callback'inde), reklam sırasında `Time.timeScale = 0` ve ses kısma.
+- [ ] Core `AdsService`: AdMob ödüllü yerleşimler, yükleme/yeniden deneme, `OnRewarded` güvenilirlik (ödül yalnızca SDK callback'inde), reklam sırasında `Time.timeScale = 0` ve ses kısma.
 - [ ] `RunState`'e `rescueUsed`, `rewardedThisRun` (snapshot'a dahil; uygulama kapanırsa durum korunur).
 - [ ] Remote Config: `tilt_rewarded_per_run` (2), `rescue_enabled` (true), `rescue_remove_count` (3), `rescue_decision_s` (6).
 - [ ] Test reklam kimlikleri `dev` ortamında; `prod`'da gerçek.
